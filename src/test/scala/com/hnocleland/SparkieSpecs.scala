@@ -26,7 +26,7 @@ class SparkieSpecs extends FunSuite with BeforeAndAfter {
   after(sc.stop())
 
 
-  test("Test Distinct Songs per user") {
+  test("Test All") {
     val smallsample: RDD[String] = sc.textFile(Config.sampleData, 4)
 
     val lines = Analytics.countLines(smallsample)
