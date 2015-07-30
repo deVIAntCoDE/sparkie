@@ -1,11 +1,9 @@
 package com.hnocleland.lastfm
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 import org.apache.spark.rdd.RDD
-
 import scala.annotation.tailrec
+import java.time.format.DateTimeFormatter
 
 /**
  * Created by hcleland on 24/07/15.
@@ -43,11 +41,10 @@ object Analytics {
 
   case class TrackTime(date: LocalDateTime, song: String)
 
-  def comparator(next: TrackTime, previous: TrackTime, step:Int): Boolean = !(next.date isAfter previous.date.plusMinutes(step))
+  def max[A](acc: Seq[A], maxlen: Seq[A]): Seq[A] = if (acc.length > maxlen.length) acc else maxlen
 
-  def max[A](acc: Seq[A], maxlen: Seq[A]) = if (acc.length > maxlen.length) acc else maxlen
-
-  def maxSeq(xs: Seq[TrackTime], step:Int): Seq[TrackTime] = {
+  def maxSeq(xs: Seq[TrackTime], step: Int): Seq[TrackTime] = {
+    def comparator(next: TrackTime, previous: TrackTime, step: Int): Boolean = !(next.date isAfter previous.date.plusMinutes(step))
     @tailrec
     def loop(acc: Seq[TrackTime], maxlen: Seq[TrackTime], xs: Seq[TrackTime]): Seq[TrackTime] = {
       acc match {
@@ -67,36 +64,24 @@ object Analytics {
     )
   }
 
-  def trackFrmTrackTime(tt: Seq[TrackTime]): Seq[String] = tt.map(_.song)
+  def longestPlaylist(data: RDD[String], step: Int, n: Int): Array[(String, String, String, Seq[String])] = {
+    def trackFrmTrackTime(tt: Seq[TrackTime]): Seq[String] = tt.map(_.song)
 
-  implicit val ord: Ordering[(Int, (String, String, String, Seq[String]))] = Ordering.fromLessThan(_._1 < _._1)
-
-
-  def longestPlaylist(data:RDD[String], step:Int) ={
-    data.mapPartitions(p => p.map(line => {
+    val aggregate: RDD[(String, Seq[TrackTime])] = data.mapPartitions(p => p.map(line => {
       val split = line.split("\t")
       (split(0), TrackTime(LocalDateTime.parse(split(1), DateTimeFormatter.ISO_DATE_TIME), split(5)))
-    }))
-  }
-
-/*
-  def longestPlaylist(data: RDD[String], n: Int): Array[(Int, (String, String, String, Seq[String]))] = {
-
-    val partitions: RDD[(String, TrackTime)] = data.mapPartitions(p => p.map(line => {
-      val split = line.split("\t")
-      (split(0), TrackTime(LocalDateTime.parse(split(1), DateTimeFormatter.ISO_DATE_TIME), split(5)))
-    }))
-
-    val aggregate: RDD[(String, Seq[TrackTime])] = partitions.aggregateByKey(Seq.empty[TrackTime])(_ :+ _, _ ++ _)
-
-    val playLists: RDD[(Int, (String, String, String, Seq[String]))] = aggregate.map(pair => {
-      val longest = maxSeq(pair._2,2)
-      (longest.length, (pair._1, longest.head.date.toString, longest.last.date.toString, formatTrackTime(longest)))
     })
-    playLists foreach println
-    playLists.top(n)
-  }
-  */
+    ).aggregateByKey(Seq.empty[TrackTime])(_ :+ _, _ ++ _)
 
+    val maxes: RDD[(Int, (String, Seq[TrackTime]))] = aggregate.map(user => {
+      val mx = maxSeq(user._2, step)
+      (mx.length, (user._1, mx))
+    })
+
+    val top: Array[(Int, (String, Seq[TrackTime]))] = maxes.sortByKey(false).take(n)
+    top foreach println
+
+    top.map(res => (res._2._1, res._2._2(0).date.toString, res._2._2.last.date.toString, trackFrmTrackTime(res._2._2)))
+  }
 
 }

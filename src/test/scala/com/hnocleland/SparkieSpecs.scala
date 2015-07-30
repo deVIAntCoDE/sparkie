@@ -27,27 +27,27 @@ class SparkieSpecs extends FunSuite with BeforeAndAfter {
 
 
   test("Test Distinct Songs per user") {
-    //    val smallsample: RDD[String] = sc.textFile(Config.sampleData, 4)
-    //
-    //    val lines = Analytics.countLines(smallsample)
-    //    assert(lines == 103)
-    //
-    //    val distinct: RDD[String] = analytics.userDistinctSongs(smallsample)
-    //    assert(distinct.count() == 3)
-    //
-    //    val ordered: Array[String] = distinct.takeOrdered(3)
-    //    assert(StringUtils.countMatches(ordered(0), "Improvisation (Live_2009_4_15)".toLowerCase) == 1)
-    //    assert(StringUtils.countMatches(ordered(1), "A Letter To Dominique".toLowerCase) == 1)
-    //    assert(StringUtils.countMatches(ordered(2), "Hate It Here".toLowerCase) == 1)
-    //
-    //    val top100: Array[(Int, String)] = Analytics.mostPopularSongs(smallsample)
-    //    top100 foreach println
-    //    assert(top100(0)._1 == 6)
-    //    assert(top100(1)._1 == 5)
-    //    assert(top100(2)._1 == 4)
+    val smallsample: RDD[String] = sc.textFile(Config.sampleData, 4)
 
-    //    val playList: RDD[String] = sc.textFile(Config.playlistData, 4)
-    //
+    val lines = Analytics.countLines(smallsample)
+    assert(lines == 103)
+
+    val distinct: RDD[String] = analytics.userDistinctSongs(smallsample)
+    assert(distinct.count() == 3)
+
+    val ordered: Array[String] = distinct.takeOrdered(3)
+    assert(StringUtils.countMatches(ordered(0), "Improvisation (Live_2009_4_15)".toLowerCase) == 1)
+    assert(StringUtils.countMatches(ordered(1), "A Letter To Dominique".toLowerCase) == 1)
+    assert(StringUtils.countMatches(ordered(2), "Hate It Here".toLowerCase) == 1)
+
+    val top100: Array[(Int, String)] = Analytics.mostPopularSongs(smallsample)
+    top100 foreach println
+    assert(top100(0)._1 == 6)
+    assert(top100(1)._1 == 5)
+    assert(top100(2)._1 == 4)
+
+    val playList: RDD[String] = sc.textFile(Config.playlistData, 4)
+
 
     val mock = Seq(
       TrackTime(LocalDateTime.parse("2006-07-01T15:05:00Z", DateTimeFormatter.ISO_DATE_TIME), "A"),
@@ -63,6 +63,17 @@ class SparkieSpecs extends FunSuite with BeforeAndAfter {
     assert(Analytics.maxSeq(mock, 3).map(_.song) != maxseq)
     assert(Analytics.maxSeq(mock, 2).map(_.song) == maxseq)
 
+    val data = sc.textFile(Config.playlistData, 4)
+    val top2 = Analytics.longestPlaylist(data, 5, 2)
+
+    val first = top2(0)
+    val second = top2(1)
+
+    assert(first._2 == "2008-12-04T19:01:48")
+    assert(first._3 == "2008-12-04T19:24:55")
+
+    assert(second._2 == "2008-01-29T22:56:10")
+    assert(second._3 == "2008-01-29T23:08:39")
 
   }
 
