@@ -43,35 +43,43 @@ object Analytics {
 
   case class TrackTime(date: LocalDateTime, song: String)
 
-  def comparator(next: TrackTime, previous: TrackTime): Boolean = !(next.date isAfter previous.date.plusMinutes(2))
+  def comparator(next: TrackTime, previous: TrackTime, step:Int): Boolean = !(next.date isAfter previous.date.plusMinutes(step))
 
   def max[A](acc: Seq[A], maxlen: Seq[A]) = if (acc.length > maxlen.length) acc else maxlen
 
-  def maxSeq(xs: Seq[TrackTime]): Seq[TrackTime] = {
+  def maxSeq(xs: Seq[TrackTime], step:Int): Seq[TrackTime] = {
     @tailrec
     def loop(acc: Seq[TrackTime], maxlen: Seq[TrackTime], xs: Seq[TrackTime]): Seq[TrackTime] = {
       acc match {
-        case Nil => loop(acc :+ xs.last, acc :+ xs.last, xs.dropRight(1))
+        case Nil => loop(acc :+ xs.head, acc :+ xs.head, xs.tail)
         case _ => {
           if (xs.isEmpty) max(acc, maxlen)
           else {
-            if (comparator(xs.last, acc.last)) loop(acc :+ xs.last, maxlen, xs.dropRight(1))
-
+            if (comparator(xs.head, acc.last, step)) loop(acc :+ xs.head, maxlen, xs.tail)
             else {
-              loop(Seq.empty[TrackTime] :+ xs.last, max(acc, maxlen), xs.tail)
+              loop(Seq.empty[TrackTime] :+ xs.head, max(acc, maxlen), xs.tail)
             }
           }
         }
       }
     }
-    loop(Seq.empty[TrackTime], Seq.empty[TrackTime], xs)
+    loop(Seq.empty[TrackTime], Seq.empty[TrackTime], xs.sortWith(_.date isBefore _.date)
+    )
   }
 
-  def formatTrackTime(tt: Seq[TrackTime]): Seq[String] = tt.map(_.toString).reverse
+  def trackFrmTrackTime(tt: Seq[TrackTime]): Seq[String] = tt.map(_.song)
 
   implicit val ord: Ordering[(Int, (String, String, String, Seq[String]))] = Ordering.fromLessThan(_._1 < _._1)
 
-  // read data and get out lines
+
+  def longestPlaylist(data:RDD[String], step:Int) ={
+    data.mapPartitions(p => p.map(line => {
+      val split = line.split("\t")
+      (split(0), TrackTime(LocalDateTime.parse(split(1), DateTimeFormatter.ISO_DATE_TIME), split(5)))
+    }))
+  }
+
+/*
   def longestPlaylist(data: RDD[String], n: Int): Array[(Int, (String, String, String, Seq[String]))] = {
 
     val partitions: RDD[(String, TrackTime)] = data.mapPartitions(p => p.map(line => {
@@ -80,15 +88,15 @@ object Analytics {
     }))
 
     val aggregate: RDD[(String, Seq[TrackTime])] = partitions.aggregateByKey(Seq.empty[TrackTime])(_ :+ _, _ ++ _)
-    aggregate foreach println
 
     val playLists: RDD[(Int, (String, String, String, Seq[String]))] = aggregate.map(pair => {
-      val longest = maxSeq(pair._2.sortWith(_.date isBefore _.date))
+      val longest = maxSeq(pair._2,2)
       (longest.length, (pair._1, longest.head.date.toString, longest.last.date.toString, formatTrackTime(longest)))
     })
-
+    playLists foreach println
     playLists.top(n)
   }
+  */
 
 
 }
