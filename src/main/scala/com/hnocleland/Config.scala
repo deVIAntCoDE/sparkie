@@ -10,4 +10,5 @@ object Config {
   val profileData = conf.getString("spark.lastfmProfiles")
   val listeningData = conf.getString("spark.lastfmStats")
   val sampleData = conf.getString("spark.sample")
+  val playlistData = conf.getString("spark.playlist")
 }
