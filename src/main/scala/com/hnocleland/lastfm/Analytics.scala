@@ -21,13 +21,13 @@ object Analytics {
     Use aggregateByKey instead of groupByKey to reduce shuffle by causing a reduce on the partitions before shuffle
     take an empty set, add items per partition to set and combine sets
    */
-  def userDistinctSongs(playbackdata: RDD[String]): RDD[String] = {
+  def userDistinctSongs(playbackdata: RDD[String]): RDD[(String, Int)] = {
     playbackdata.map(line => {
       val arr = line.split("\t")
       (arr(0), arr(5).toLowerCase)
-    }).aggregateByKey(Set.empty[String])((set, value) => set + value, (setX, setY) => setX ++ setY).map(distinct => {
-      s"${distinct._1} => [\n${distinct._2.toString().drop(4).dropRight(1)}\n"
-    })
+    }).aggregateByKey(Set.empty[String])((set, value) => set + value, (setX, setY) => setX ++ setY)
+      .map(x =>( x._1, x._2.size))
+      .sortByKey() // just sort to make it look nice! (its a small set anyway)
   }
 
   /*

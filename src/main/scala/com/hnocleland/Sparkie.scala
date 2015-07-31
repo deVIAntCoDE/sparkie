@@ -41,6 +41,7 @@ object Sparkie {
     FileUtil.fullyDelete(new File(result1))
     q1.saveAsTextFile(s"$result1/parts")
     Utils.merge(s"$result1/parts", s"$result1/merged")
+    FileUtil.fullyDelete(new File(s"$result1/parts"))
 
 
     //Question 2

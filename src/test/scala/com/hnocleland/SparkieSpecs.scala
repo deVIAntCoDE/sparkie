@@ -32,13 +32,14 @@ class SparkieSpecs extends FunSuite with BeforeAndAfter {
     val lines = Analytics.countLines(smallsample)
     assert(lines == 103)
 
-    val distinct: RDD[String] = analytics.userDistinctSongs(smallsample)
+    val distinct: RDD[(String,Int)] = analytics.userDistinctSongs(smallsample)
+    //assert there are 3 there users in sample data
     assert(distinct.count() == 3)
 
-    val ordered: Array[String] = distinct.takeOrdered(3)
-    assert(StringUtils.countMatches(ordered(0), "Improvisation (Live_2009_4_15)".toLowerCase) == 1)
-    assert(StringUtils.countMatches(ordered(1), "A Letter To Dominique".toLowerCase) == 1)
-    assert(StringUtils.countMatches(ordered(2), "Hate It Here".toLowerCase) == 1)
+    val ordered: Array[(String,Int)] = distinct.takeOrdered(3)
+    assert(ordered(0) == ("user_000001",10))
+    assert(ordered(1) == ("user_000995",10))
+    assert(ordered(2) == ("user_001000",10))
 
     val top100: Array[(Int, String)] = Analytics.mostPopularSongs(smallsample)
     top100 foreach println
