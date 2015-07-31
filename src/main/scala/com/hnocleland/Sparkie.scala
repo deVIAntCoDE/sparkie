@@ -47,16 +47,18 @@ object Sparkie {
     val q2 = Analytics.mostPopularSongs(playbackData)
     val result2 = s"${args(0)}/q2/results"
     FileUtil.fullyDelete(new File(result2))
-    sc.makeRDD(q2).saveAsTextFile(s"$result2/parts")
-    Utils.merge(s"$result2/parts", s"$result2/merged")
+//    sc.makeRDD(q2).saveAsTextFile(s"$result2/parts")
+//    Utils.merge(s"$result2/parts", s"$result2/merged")
+    sc.makeRDD(q2,1).saveAsTextFile(s"$result2/merged")
 
 
     //Question 3
-    val q3 = Analytics.longestPlaylist(playbackData,20,100)
+    val q3 = Analytics.longestPlaylist(playbackData,20,10)
     val result3 = s"${args(0)}/q3/results"
     FileUtil.fullyDelete(new File(result3))
-    sc.makeRDD(q2).saveAsTextFile(s"$result3/parts")
-    Utils.merge(s"$result3/parts", s"$result3/merged")
+//    sc.makeRDD(q3).saveAsTextFile(s"$result3/parts")
+//    Utils.merge(s"$result3/parts", s"$result3/merged")
+    sc.makeRDD(q3 ,1).saveAsTextFile(s"$result3/merged")
 
     sc.stop()
   }

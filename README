@@ -28,7 +28,7 @@ RUNNING
  ./bin/spark-submit \
     --class com.hnocleland.Sparkie \
     --master "local[*]" \
-    --driver-memory 8G \
+    --driver-memory <memory in G eg. 32G> \
     --conf spark.lastfmStats="/path/to/lastfm/userid-timestamp-artid-artname-traid-traname.tsv" \
     /path/to/sparkie_2.11-1.0.jar \
     "/path/to/sparkie_output"
@@ -37,6 +37,9 @@ RUNNING
    merged -> a single file with the result
    parts -> parts files of the result from the different partitions
    Merged are for viewing and the parts can be fed back into other spark jobs for further analysis
+
+   **Update
+   q2 and q3 write to single files part-0000, uncomment the code to create part files
 
 
 #Todo: pass sample file as lastfmstats in spark-submit scrip to test --config isnt broken
