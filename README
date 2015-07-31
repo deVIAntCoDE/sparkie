@@ -1,7 +1,16 @@
+REQUIRED
+==============
+Java8
+
+
+
+
 I chose to implement this in a Scala Spark project because i felt the questions were very well suited as a spark use case.
 Also i wanted to use this as an opportunity to actually write a spark application since i have never done that. I planned to
 try out sparkSql as well but i feel i have spent too much time on this so perhaps i will explore that later on my own time.
 
+RUNNING
+=================
 1. Package the spark application in sbt to get the jar 'sparkie_2.11-1.0.jar'
 
 2. To run the project, execute the code below in the spark home directory. Provide the path to the input data and an output directory as shown below.
