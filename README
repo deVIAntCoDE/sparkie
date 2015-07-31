@@ -1,6 +1,20 @@
+I chose to implement this in a Scala Spark project because i felt the questions were very well suited as a spark use case.
+Also i wanted to use this as an opportunity to actually write a spark application since i have never done that. I planned to
+try out sparkSql as well but i feel i have spent too much time on this so perhaps i will explore that later on my own time.
+
+1. Package the spark application in sbt to get the jar 'sparkie_2.11-1.0.jar'
+
+2. To run the project, execute the code below in the spark home directory. Provide the path to the input data and an output directory as shown below.
+
  ./bin/spark-submit \
     --class com.hnocleland.Sparkie \
     --master "local[*]" \
-    --conf spark.lastfmStats="/Users/hnocleland/Downloads/lastfm-dataset-1K/userid-timestamp-artid-artname-traid-traname.tsv" \
-    /Users/hnocleland/Development/DeviantCode/sparkie/target/scala-2.11/sparkie_2.11-1.0.jar \
-    "/Users/hnocleland/Desktop/sparkie_output"
+    --conf spark.lastfmStats="/path/to/lastfm/userid-timestamp-artid-artname-traid-traname.tsv" \
+    /path/to/sparkie_2.11-1.0.jar \
+    "/path/to/sparkie_output"
+
+
+
+
+#Todo: pass sample file as lastfmstats in spark-submit scrip to test --config isnt broken
+#Partition data and try using fold for the playlist comparison to see performance time.
