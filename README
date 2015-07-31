@@ -1,0 +1,6 @@
+ ./bin/spark-submit \
+    --class com.hnocleland.Sparkie \
+    --master "local[*]" \
+    --conf spark.lastfmStats="/Users/hnocleland/Downloads/lastfm-dataset-1K/userid-timestamp-artid-artname-traid-traname.tsv" \
+    /Users/hnocleland/Development/DeviantCode/sparkie/target/scala-2.11/sparkie_2.11-1.0.jar \
+    "/Users/hnocleland/Desktop/sparkie_output"

@@ -15,7 +15,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  */
 
 class SparkieSpecs extends FunSuite with BeforeAndAfter {
-  val conf = new SparkConf().setAppName("Sparkie").setMaster("local")
+  val conf = new SparkConf().setAppName("Sparkie").setMaster("local[*]")
   var sc: SparkContext = _
   val analytics = Analytics
 

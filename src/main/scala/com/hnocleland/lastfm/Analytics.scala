@@ -18,7 +18,7 @@ object Analytics {
     }).map(arr => {
       (arr(0), arr(5).toLowerCase)
     }).aggregateByKey(Set.empty[String])((set, value) => set + value, (setX, setY) => setX ++ setY).map(distinct => {
-      s"${distinct._1} => ${distinct._2.toString()}"
+      s"${distinct._1} => [\n${distinct._2.toString().drop(4).dropRight(1)}\n"
     })
   }
 
