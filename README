@@ -3,9 +3,8 @@ REQUIRED
 Java8
 Spark Built against Scala-2.11
 
-I chose to implement this in a Scala Spark project because i felt the questions were very well suited as a spark use case.
-Also i wanted to use this as an opportunity to actually write a spark application since i have never done that. I planned to
-try out sparkSql as well but i feel i have spent too much time on this so perhaps i will explore that later on my own time.
+Playing with lastfm dataset to answer interesting questions from the data
+
 
 Setting up Local Spark
 ===============================
